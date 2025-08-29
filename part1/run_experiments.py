@@ -57,7 +57,7 @@ def main():
     try:
         for k in K_VALUES:
             for r in range(1, RUNS_PER_K + 1):
-                modify_config("k", k) # should implement this function
+                modify_config("k", k)
                 cmd = CLIENT_CMD_TMPL
                 out = h1.cmd(cmd)
                 # parse ELAPSED_MS
