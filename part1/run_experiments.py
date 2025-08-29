@@ -5,6 +5,7 @@ import time
 import csv
 from pathlib import Path
 from topo_wordcount import make_net
+import json
 
 # Config
 K_VALUES = [1, 2, 5, 10, 20, 50, 100]   
@@ -13,6 +14,24 @@ SERVER_CMD = "./server --config config.json"
 CLIENT_CMD_TMPL = "./client --config config.json --quiet"
 
 RESULTS_CSV = Path("results.csv")
+
+def modify_config(
+        config_filename:str, 
+        key:str, 
+        value:any
+    ) -> None:
+    """
+    changes this particular key with the corresponding value, if not present then adds this key to the file
+    """
+    json_file = open(config_filename, 'r')
+    data = json.load(json_file)
+    data[key] = value
+    json_file.close()
+
+    with open(config_filename, 'w') as f:
+        json.dump(data, f)
+    
+    return
 
 def main():
     # Prepare CSV
