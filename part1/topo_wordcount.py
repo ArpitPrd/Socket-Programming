@@ -14,4 +14,4 @@ class WordCountTopo(Topo):
 
 def make_net():
     return Mininet(topo=WordCountTopo(), controller=OVSController,
-                   autoSetMacs=True, autoStaticArp=True)
+                   autoSetMacs=True, autoStaticArp=True, listenPort=5222)
