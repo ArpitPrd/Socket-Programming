@@ -11,6 +11,38 @@
 - X11 forwardsing problems: http://www.faqs.org/docs/Linux-HOWTO/XDMCP-HOWTO.html
 - can run iperf on VM using -c <ip address> -t <time>
 - potential place for finding the logs: /var/log/libvirt/qemu/<vm-name>.log
+- you need the image of ubuntu 22 to use the same
+
+- how to set up ssh in vs code
+    - [1] click on >< thing on the bottom or Remote:SSH Configure
+    - in the configs file:
+        - Host prd-arpit (any name for the server)
+        - Hostname ip addr
+        - User prd
+    - Use the ref [1] and start the ssh again
+    - enter the login password
+- using json
+    ```
+    import json
+
+    f = open(...)
+    # loading data
+    data = json.load(f)
+    ... # edit the data
+    # saving data
+    with open(..., 'w') as f:
+        json.dump(data, f, indent=<optional>)
+    ```
+- use this for setting git user:
+    - git config --global user.name "name"
+    - git config --global user.email "email addr"
+
+    check this by:
+    - git config --list
+- NAT = Netowrk Address Translotors
+- 10.0.0.0 to 10.255.255.255 are private netowrks that are reserved and cannot be pinged. however mininet is isolated and hence can be pinged easily. The hosts in mininet can ping eachother even if they have this address.
+- Proxy server to monitor traffic
+- the iso of ubuntu are present at different location and can download from the nearest neighbour
 
 ## Errors
 - can check logs: journalctl -xe, dmesg | less (also a source) these are the kernel logs, /var/logs/syslogs general ubuntu logs.
@@ -42,6 +74,21 @@
         - h1 iperf -s & // acts as server
         - h2 iperf -c h1 // acts as client 
 - pass -v to run in debug mode
+- run CLI commands on python with &
+- fgets blocks input to be taken from the python script
+
+- finding errors in the run():
+    - worked with make net
+    - check the print is actually correct by logging "check"
+    - try & on the run function
+    - 
+    ```
+    h1.cmd('gcc -o server server.c')
+    h1.cmd('gcc -o client client.c')
+    ```
+    - this is not an error, because changed h1 to h2, since they share the same filesystem, they basically write also to the same filesystem
+    - remember linux model is a filesystem
+    - works with binary on the system
 
 ## Assignment 
 - Leaan to write network applications specifically
@@ -130,6 +177,50 @@ c0
 - customisable bw and links, delays, etc..
     - sudo mn --link tc,bw=10,delay=10ms
 
+- how to run the same code using the CLI
+    - h1 gcc -o server server.c
+    - h2 gcc -o client client.c
+    - h1 ./server port_number
+    - h2 ./client hostname port_number
+
+    this is a convinient way to read the inputs
+
+## Mininet Python API
+
+- API docs: https://mininet.org/api/classmininet_1_1net_1_1Mininet.html#a95aa95c3c505d25f4d7d5bb6cee1b785
+- get: getNodeByName - returns nodes with given name
+- ipBase: base ip address for the hosts
+- mininet.net.IP: return IP Address class
+- addLink has cls = TCLink (dk)
+- like how the "filesystem" was shared in the CLI, we have here also, run it with "&" this is compulsary (this is like the localhost thing, ig)
+- you can make a net mininet.net.Mininet class first and then build the topology or you can build and pass a variable with the topology
+
+- workflow:
+    - net = make_net()
+    - net.start
+    - h1, h2 = net.h1, net.h2
+    - h1.cmd()
+    - h2.cmd()
+
+- mn emulates link bandwidth with HTB = Hierarchichal Token Bucket
+    - Error: Warning: sch_htb: quantum of class 50001 is big. Consider r2q change
+    - this is just a kernel warning (ignoer)
+    - prints when the quantum of message being sent is too large compared to the intended bw
+    - class can send a lot more data than it is intended rate before rescheduling
+    - r2q parameter controls the rate to quentum how the rate is divided into quanta
+- use popen (opens a pipe to and from the command line) the return object is a open file object that is connected to the pipe, this helps in reading and writing options
+- this allows to write down the commands in the host h1 and execute them 
+- basically mininet starts separate processes for each of the host, provides them with their own namespaces and the processes communicate amongst eachother and its own file descriptior for socketrs (makes host very light weight)
+- virtual ethernet pairs are connected cables: basically interprocess communicattions are happening here
+- all this is reused from the linux kernel softwares (the kernel switches) (using open vswitch)
+- OVS can run in user space, kernel space support OpenFlow for control 
+- run the real SDN controllers that are inherently present on the linux subsystem (dk)
+- start chosen SDN controller pr connect to an external one
+- connects to OVS with OpenFlow (dk)
+- linux traddic control tc and htb/qdisc to emulate:
+    - BW, Delay, Packet Loss, Queues (dk)
+- working
+
 ## Finding 95 percentile
 
 - a, b, c, d, e = X, S
@@ -158,6 +249,8 @@ c0
     - use read and write system callees to send and recieve data
 - steps for creating socket on the server side:
     - create a socket with socket() system call
+        - returns a file descriptor that refers to the end points:https://man7.org/linux/man-pages/man2/socket.2.html
+        - for a protocol and domain, there exists only one type of protocol, can pass 0 here.
     - bind socket to an address using bind calls, port of the host
     - listen to the connectinos
     - accept() connections from the client
@@ -172,7 +265,11 @@ c0
 - Socket Types:
     - Stream Sockests: TCP SOCK_STREAM
     - Datagram Sockets: UDP SOCK_DGRAM
-
+- used in web browseers
+- chat applications
+- FTPs
+- Distos
+- 
 
 ## Task for the Assignment
 
@@ -245,6 +342,17 @@ c0
         - server.cpp
         - Makefile
 
+- code in C++ for client and socket
+- c++17 can be used
+- do not create .h files
+- do not print anything at the client when we are greater than EOF 
+- part2 all the clients are the same
+- part 2, no multithreading required
+    - server accepts client requests concurrently but proccesses them one at a time (arrival order)
+    - https://piazza.com/class/mdh2cbzosfp6qh/post/54 for multi-threading discussions
+- variable shell discussion: https://piazza.com/class/mdh2cbzosfp6qh/post/64
+- ubuntu 22 gives good results
+
 ## File Structure
 
 - Network Topology FIle:
@@ -252,7 +360,7 @@ c0
     - contains 2 hosts, one switch 
 - Runner.py
     - check for plotting with confidence times
-    - 
+    - has opened only one connection
 
 - plot_results.py
     - use this for plotting with 95% confidence interval 
