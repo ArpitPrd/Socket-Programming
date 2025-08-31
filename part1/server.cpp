@@ -15,14 +15,6 @@
 
 using namespace std;
 
-/**
- * @brief sets up the host with ip and port, this is a wrapper for the server
- */
-void set_up_host(struct sockaddr_in* server_addr, int port) {
-    server_addr->sin_family = AF_INET;
-    server_addr->sin_port = htons(port);
-    server_addr->sin_addr.s_addr = INADDR_ANY;
-}
 
 /**
  * @brief convert a file to a string, just enter filename
@@ -137,7 +129,6 @@ string handle_request(string message, string filename) {
 }
 
 int main(int argc, char *argv[]) {
-
     string config_file = "config.json";
 
     for (int i = 1; i < argc; i++) {
@@ -153,12 +144,15 @@ int main(int argc, char *argv[]) {
     string filename=info["filename"];
     int port=stoi(info["server_port"]);
     
+    cout << "server port " << port << endl;
     /* opening a socket at server can check if inside a function this works or not */
     int server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     
     /* now we prepare the server */
     struct sockaddr_in server_addr;
-    set_up_host(&server_addr, port);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(port);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
     
     /* establish a binding */
     int bind_index=bind(server_socket_fd, (struct sockaddr *) &server_addr, sizeof(server_addr));

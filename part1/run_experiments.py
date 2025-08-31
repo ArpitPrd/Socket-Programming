@@ -5,55 +5,14 @@ import time
 import csv
 from pathlib import Path
 from topo_wordcount import make_net
-import json
 
 # Config
-K_VALUES = [1] #, 2, 5, 10, 20, 50, 100]   
-RUNS_PER_K = 1
-port = 5001
-SERVER_CMD = f"./server {port}" # "./server --config config.json"
-CLIENT_CMD_TMPL = f'echo "hello there" | ./client 10.0.0.2 {port}' #"./client --config config.json --quiet"
+K_VALUES = [1, 2, 5, 10, 20, 50, 100]   
+RUNS_PER_K = 5
+SERVER_CMD = "./server --config config.json"
+CLIENT_CMD_TMPL = "./client --config config.json --quiet"
 
 RESULTS_CSV = Path("results.csv")
-
-def trial_net():
-    
-    net = make_net()
-    net.start()
-    h1 = net.get("h1")
-    h2 = net.get("h2")
-    # Compile programs
-    
-    # h1.pop('gcc -o server server.c')
-    # h1.cmd('gcc -o client client.c')
-
-    # Start server in background
-    srv =h1.popen('./server 5001')
-
-    # Run client
-    print(h2.cmd('echo "hello there how are you!" | ./client 10.0.0. 5001'))
-    print(srv.stdout.readline())
-    # CLI(net)  # drop to CLI for testing
-    net.stop()
-
-
-def modify_config(
-        config_filename:str, 
-        key:str, 
-        value:any
-    ) -> None:
-    """
-    changes this particular key with the corresponding value, if not present then adds this key to the file
-    """
-    json_file = open(config_filename, 'r')
-    data = json.load(json_file)
-    data[key] = value
-    json_file.close()
-
-    with open(config_filename, 'w') as f:
-        json.dump(data, f)
-    
-    return
 
 def main():
     # Prepare CSV
@@ -65,26 +24,23 @@ def main():
     net = make_net()
     net.start()
 
-    h1 = net.get('h1')  # client safer technique to get h1
-    h2 = net.get('h2')  # server " " "
+    h1 = net.get('h1')  # client
+    h2 = net.get('h2')  # server
 
     # Ensure words.txt exists (shared FS)
     if not Path("words.txt").exists():
         Path("words.txt").write_text("cat,bat,cat,dog,dog,emu,emu,emu,ant\n")
 
     # Start server
-    print("starting the server")
-    srv = h2.popen(SERVER_CMD, shell=True)
+    srv = h2.popen(SERVER_CMD, shell=True, stdout=None, stderr=None)
     time.sleep(0.5)  # give it a moment to bind
 
     try:
         for k in K_VALUES:
             for r in range(1, RUNS_PER_K + 1):
-                modify_config("config.json", "k", k)
+                modify_config("k", k) # should implement this function
                 cmd = CLIENT_CMD_TMPL
-                print("start the client")
                 out = h1.cmd(cmd)
-                print(f"read: {srv.stdout.readline()}")
                 # parse ELAPSED_MS
                 m = re.search(r"ELAPSED_MS:(\d+)", out)
                 if not m:

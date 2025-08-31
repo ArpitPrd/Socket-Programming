@@ -14,10 +14,13 @@ net = make_net(); net.start()
 h1, h2 = net.get('h1'), net.get('h2')
 
 # start server with demo config
+print("setting up server")
 srv = h2.popen("./server --config demo_config.json", shell=True)
+print(srv.stdout.readline())
 time.sleep(0.5)
 
 # run client once (no --quiet): prints word frequencies + ELAPSED_MS
+print("setting client")
 print(h1.cmd(f"./client --config demo_config.json --k {K}"))
 
 srv.terminate(); time.sleep(0.2); net.stop()

@@ -15,26 +15,6 @@
 
 using namespace std;
 
-/**
- * @brief sets up the host with ip and port, this is a wrapper for the server
- */
-
-void set_up_host(struct sockaddr_in* server_addr, struct hostent* server, int port) {
-    server_addr->sin_family = AF_INET;
-    server_addr->sin_port = htons(port);
-    memcpy(&server_addr->sin_addr.s_addr, server->h_addr, server->h_length);
-}
-
-
-/**
- * @brief use this for connection tcp 
- */
-void tcp_connect(int sock_file_descriptor, struct sockaddr * server_addr) {
-    int connection = connect(sock_file_descriptor,  server_addr, sizeof(server_addr));
-    if (connection < 0) {
-        cerr << "ERROR: connection not done" << endl;
-    }
-}
 
 
 /**
@@ -95,31 +75,40 @@ map<string, string> parse_json(const string &filename) {
     return info;
 }
 
+/**
+ * @brief splits a string of words about the delimiter
+ * 
+ * @param s string to be dplit
+ * @param delimiter can be anyhting in chars
+ */
+vector<string> split(string s, char delimiter) {
+    vector<string> words;
+    string word;
+
+    stringstream ss(s);
+    while (getline(ss, word)) { // split by '\n' first
+        stringstream line_ss(word);
+        string token;
+        while (getline(line_ss, token, delimiter)) { // then split further by delimiter
+            if (!token.empty())
+                words.push_back(token);
+        }
+    }
+
+    return words;
+}
 
 void print_freq(string message) {
     int n = message.size();
     map<string, int> freq;
-    string subst = "";
-    for (int j = 0; j < n; j++) {
-        
-        /* checking if end of word */
-        if (message[j]==',') {
-            if (freq.find(subst) == freq.end()) 
-                freq[subst] = 0;
-            freq[subst] += 1;
-            subst = "";
-            continue;
-        }
-        
-        /* adding to substring */
-        subst += message[j];
-    }
-
-    /* for the last word or EOF */
-    if (freq.find(subst) == freq.end()) 
-        freq[subst] = 0;
+    vector<string> words = split(message, ',');
     
-    freq[subst] += 1;
+    for (string word: words) {
+        if (freq.find(word) == freq.end()) {
+            freq[word]=0;
+        }
+        freq[word] += 1;
+    }
 
     /* printing the word */
     for (auto &p : freq) {
@@ -158,7 +147,8 @@ int main(int argc, char * argv[]) {
     int port=stoi(info["server_port"]);
     
     int client_socket_fd = socket(AF_INET, SOCK_STREAM, 0); // the file descriptor of the client
-    
+    cout << "server ip " << server_ip << endl;
+    cout << "client port " << port << endl;
     /* now we prepare the server */
     struct hostent* server = gethostbyname(server_ip.c_str());
     if (!server) {
@@ -166,10 +156,15 @@ int main(int argc, char * argv[]) {
         exit(1);
     }
     struct sockaddr_in server_addr;
-    set_up_host(&server_addr, server, port);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(port);
+    memcpy(&server_addr.sin_addr.s_addr, server->h_addr, server->h_length);
     
     /* establish a TCP connection */
-    tcp_connect(client_socket_fd, (struct sockaddr *) &server_addr);
+    int index = connect(client_socket_fd, (struct sockaddr*) &server_addr, sizeof(server_addr));
+    if (index < 0) {
+        cerr << "ERROR: connection not done" << endl;
+    }
 
     /* prepare the messahge */
     string send_message = to_string(p) + string(",") + to_string(k) + "\n";

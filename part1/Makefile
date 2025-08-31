@@ -1,9 +1,10 @@
 build:
-	g++ client.c -o client
-	g++ server.c -o server
+	g++ client.cpp -o client
+	g++ server.cpp -o server
 
 run:
-	python3 demo_runner.py
+	sudo python3 demo_runner.py
 .PHONY: plot
 plot:
-	sudo python3
+	sudo python3 run_experiment.py
+	sudo plot_results.py
