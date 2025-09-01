@@ -74,7 +74,7 @@ def main():
 
     # Start server
     print("starting the server")
-    srv = h2.popen(SERVER_CMD, shell=True)
+    srv = h2.popen(SERVER_CMD, shell=True, stdout=None, stderr=None)
     time.sleep(0.5)  # give it a moment to bind
 
     try:

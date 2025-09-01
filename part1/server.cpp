@@ -98,8 +98,7 @@ vector<string> split(string s, char delimiter) {
     return words;
 }
 
-string handle_request(string message, string filename) {
-    string words = file_to_string(filename);
+string handle_request(string message, string words) {
     vector<string> words_vector = split(words, ',');
 
     vector<string> p_and_k = split(message, ',');
@@ -128,6 +127,11 @@ string handle_request(string message, string filename) {
     
 }
 
+bool end_service(string message) {
+    if (message=="STOP") return true;
+    return false;
+}
+
 int main(int argc, char *argv[]) {
     string config_file = "config.json";
 
@@ -140,11 +144,15 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    
+    
     map<string, string> info = parse_json(config_file);
     string filename=info["filename"];
+    /* init the words */
+    string words = file_to_string(filename);
+    
     int port=stoi(info["server_port"]);
     
-    cout << "server port " << port << endl;
     /* opening a socket at server can check if inside a function this works or not */
     int server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     
@@ -157,7 +165,7 @@ int main(int argc, char *argv[]) {
     /* establish a binding */
     int bind_index=bind(server_socket_fd, (struct sockaddr *) &server_addr, sizeof(server_addr));
     if (bind_index < 0) {
-        cerr << "ERROR: in binding";
+        cerr << "ERROR: in binding\n";
         exit(1);
     }
     /* listen on all of the ports */
@@ -168,30 +176,36 @@ int main(int argc, char *argv[]) {
     socklen_t client_len = sizeof(client_addr);
     int client_socket_fd = accept(server_socket_fd, (struct sockaddr *) &client_addr, &client_len);
     if (client_socket_fd < 0) {
-        cerr << "ERROR: unable to accept";
+        cerr << "ERROR: unable to accept\n";
         exit(1);
     }
-
     /* reading from the client */
-    char recv_buffer[128] = {0};
-    int index = read(client_socket_fd, recv_buffer, 127);
-    if (index < 0) {
-        cerr << "ERROR: reading from socket";
+    char recv_buffer[1024] = {0};
+    
+    while (true) {
+        int index = read(client_socket_fd, recv_buffer, 1023);
+        if (index < 0) {
+            cerr << "ERROR: reading from socket\n";
+        }
+
+        /* handling the request */
+        string recv_message(recv_buffer, index);
+
+        if (end_service(recv_message)) break;
+
+        string send_message = handle_request(recv_message, words);
+
+        /* sending the request */
+        const char * send_buffer = send_message.c_str();
+        index = write(client_socket_fd, send_buffer, send_message.size());
+        if (index < 0) {
+            cerr << "ERROR: write to socket\n";
+            exit(1);
+        }
     }
-
-    /* handling the request */
-    string recv_message(recv_buffer, index);
-    string send_message = handle_request(recv_message, filename);
-
-    /* sending the request */
-    const char * send_buffer = send_message.c_str();
-    index = write(client_socket_fd, send_buffer, send_message.size());
-    if (index < 0) {
-        cerr << "ERROR: write to socket";
-        exit(1);
-    }
-
+    
     /* clolsing the client socket */
     close(client_socket_fd);
     close(server_socket_fd);
+    return 0;
 }

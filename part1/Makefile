@@ -6,5 +6,5 @@ run:
 	sudo python3 demo_runner.py
 .PHONY: plot
 plot:
-	sudo python3 run_experiment.py
-	sudo plot_results.py
+	sudo python3 run_experiments.py
+	python3 plot_results.py

@@ -12,10 +12,12 @@
 #include <arpa/inet.h>
 #include <fstream>
 #include <sstream>
+#include <chrono>
 
 using namespace std;
-
-
+using namespace std::chrono;
+using hrc = time_point<high_resolution_clock>;
+#define now() high_resolution_clock::now()
 
 /**
  * @brief convert a file to a string, just enter filename
@@ -122,10 +124,29 @@ void print_freq(string message) {
 
 }
 
+/**
+ *@brief parses the file and finds out if there actually is some EOF token
+ */
+bool eof(vector<string> words) {
+    for (string word: words) {
+        if (word=="EOF") {
+            return true;
+        }
+    }
+    return false;
+}
+
 int main(int argc, char * argv[]) {
 
     string config_file = "config.json";
-    int k = -1;
+    map<string, string> info = parse_json(config_file);
+    string server_ip=info["server_ip"];
+
+    int p=stoi(info["p"]);
+    int k=stoi(info["k"]);
+    int port=stoi(info["server_port"]);
+    bool single_run = false, quiet=false;
+
     for (int i = 1; i < argc; i++) {
         string flag = argv[i];
 
@@ -138,17 +159,20 @@ int main(int argc, char * argv[]) {
             k = stoi(argv[i+1]);
             i++;
         }
+
+        if (flag=="--run") {
+            single_run = true;
+        }
+
+        if (flag=="--quiet") {
+            quiet = true;
+        }
     }
 
-    map<string, string> info = parse_json(config_file);
-    string server_ip=info["server_ip"];
-    int p=stoi(info["p"]);
-    k=stoi(info["k"]);
-    int port=stoi(info["server_port"]);
+
     
     int client_socket_fd = socket(AF_INET, SOCK_STREAM, 0); // the file descriptor of the client
-    cout << "server ip " << server_ip << endl;
-    cout << "client port " << port << endl;
+    
     /* now we prepare the server */
     struct hostent* server = gethostbyname(server_ip.c_str());
     if (!server) {
@@ -165,22 +189,62 @@ int main(int argc, char * argv[]) {
     if (index < 0) {
         cerr << "ERROR: connection not done" << endl;
     }
+    
+    double file_download_time = 0;
+    string full_doc = "";
+    while (true) {
+        /* prepare the messahge */
+        string send_message = to_string(p) + string(",") + to_string(k) + "\n";
+        const char* send_buffer = send_message.c_str();
 
-    /* prepare the messahge */
-    string send_message = to_string(p) + string(",") + to_string(k) + "\n";
+        /* recieve any message from the server */
+        string recv_message;
+        char recv_buffer[4096];  // larger buffer is fine
+
+        /* loggin the time */
+        hrc start = now();
+
+        /* send the message to the server, message can be found on the file descriptor */
+        cout << "sending request" << endl;
+        send(client_socket_fd, send_buffer, send_message.size(), 0);
+
+        int bytes_received = recv(client_socket_fd, recv_buffer, sizeof(recv_buffer), 0);
+        
+        /* logging download time */
+        hrc end = now();
+        
+        if (bytes_received > 0) {
+            recv_message.assign(recv_buffer, bytes_received);  // use only valid bytes
+        }
+
+        double delta = duration<double, std::milli>(end - start).count();
+
+        file_download_time += delta;
+
+        full_doc += recv_message;
+
+        vector<string> words = split(recv_message, ',');
+        if (eof(words)) {
+            break;
+        }
+
+        if (single_run) break;
+
+        p += k;
+    }
+
+    /* telling the server I am done */
+    string send_message = "STOP";
     const char* send_buffer = send_message.c_str();
-
-    /* send the message to the server, message can be found on the file descriptor */
     send(client_socket_fd, send_buffer, send_message.size(), 0);
 
-    /* recieve any message from the server */
-    char recv_buffer[1024] = {0};
-    recv(client_socket_fd, recv_buffer, sizeof(recv_buffer), 0);
+    /*diplaying ELAPSED_MS*/
+    if (!quiet) cout << "ELAPSED_MS:" << file_download_time << endl;
 
     /* clolsing the client socket */
     close(client_socket_fd);
 
     /* use this recieved buffer for further manipulations */
-    string recv_message(recv_buffer);
-    print_freq(recv_message);
+    if (!quiet) print_freq(full_doc);
+    
 }
