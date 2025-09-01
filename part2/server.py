@@ -2,35 +2,10 @@ import select
 import socket
 import json
 
-# Create the default selector
-sel = selectors.DefaultSelector()
-
-def accept_connection(sock):
-    conn, addr = sock.accept()  # Accept the connection
-    print(f"Accepted connection from {addr}")
-    conn.setblocking(False)     # Non-blocking mode
-    sel.register(conn, selectors.EVENT_READ, handle_client)
-
-def handle_client(conn):
-    try:
-        data = conn.recv(1024)
-        if data:
-            message = data.decode()
-            print(f"Received: {message} from {conn.getpeername()}")
-            conn.sendall(f"Echo: {message}".encode())
-        else:
-            # No data means client closed connection
-            print(f"Closing connection to {conn.getpeername()}")
-            sel.unregister(conn)
-            conn.close()
-    except ConnectionResetError:
-        print("Client disconnected abruptly")
-        sel.unregister(conn)
-        conn.close()
-
 def clear_connection(sock, sockets_list, clients):
     sockets_list.remove(sock)
-    del clients[sock]
+    if sock in clients:
+        del clients[sock]
     sock.close()
     return
 
@@ -54,14 +29,13 @@ def main(config):
     with open(words_file) as f:
         words = f.readline()
 
-    # Create listening socket
-    server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_sock.bind((host, port))
-    server_sock.listen()
-    print(f"Server listening on {host}:{port}")
+    # Create listening socket same as C
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind((host, port))
+    server_socket.listen()
 
-    sockets_list = [server_sock]
+    sockets_list = [server_socket]
 
     clients = {}
 
@@ -69,9 +43,9 @@ def main(config):
         read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list)
         for read_socket in read_sockets:
             
-            if read_socket is server_sock:
+            if read_socket is server_socket:
                 # New connection
-                client_socket, client_address = server_sock.accept()
+                client_socket, client_address = server_socket.accept()
                 sockets_list.append(client_socket)
                 clients[client_socket] = client_address
                 print(f"Accepted connection from {client_address}")
@@ -97,11 +71,10 @@ def main(config):
 
         # Handle exceptions
         for read_socket in exception_sockets:
-            sockets_list.remove(read_socket)
-            if read_socket in clients:
-                del clients[read_socket]
-            read_socket.close()
+            clear_connection(read_socket)
 
+        if len(sockets_list)==0:
+            break
 
 def read_json(filename) -> dict:
     with open(filename) as f:

@@ -43,8 +43,7 @@ def main():
     net = make_net()
     net.start()
 
-    h1 = net.get('h1')  # client
-    h2 = net.get('h2')  # server
+    h_server = net.get("h1")
 
     # Ensure words.txt exists (shared FS)
     if not Path("words.txt").exists():
