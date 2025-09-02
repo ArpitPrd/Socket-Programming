@@ -52,6 +52,7 @@ def main(single_run: bool = False):
     data = read_json()
     NUM_CLIENTS_LIST = data["num_clients"]
     NUM_CLIENTS = list(range(1, NUM_CLIENTS_LIST+1, 4)) if NUM_CLIENTS_LIST > 4 else [NUM_CLIENTS_LIST]
+    NUM_CLIENTS.append(32)
     NUM_CLIENTS = [1] if single_run else NUM_CLIENTS
 
     with RESULTS_CSV.open("w", newline="") as f:
