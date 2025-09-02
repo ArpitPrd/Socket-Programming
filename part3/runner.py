@@ -61,35 +61,88 @@ class Runner:
         jfi = (sum_throughputs ** 2) / (n * sum_squares)
         return jfi
 
+    # def run_experiment(self, c_value):
+    #     print(f"Running experiment with c={c_value} on Mininet...")
+    #     self.cleanup_logs()
+        
+    #     net = create_network(num_clients=self.num_clients)
+        
+    #     # Create a command script for Mininet CLI
+    #     cmd_file_path = 'run_commands.txt'
+    #     with open(cmd_file_path, 'w') as f:
+    #         f.write('server python3 server.py &\n')
+    #         f.write('py time.sleep(3)\n') # Give server time to start
+    #         # Start clients, rogue first, then normal ones
+    #         f.write(f'client1 python3 client.py --batch-size {c_value} --client-id rogue &\n')
+    #         for i in range(2, self.num_clients + 1):
+    #             f.write(f'client{i} python3 client.py --batch-size 1 --client-id normal_{i} &\n')
+    #         f.write('py print("Waiting for clients to finish...")\n')
+    #         f.write('py time.sleep(20)\n') # Generous wait time for clients
+    #         f.write('py print("Clients should be finished. Exiting.")\n')
+    #         f.write('exit\n')
+
+    #     print("Starting Mininet CLI and executing commands...")
+    #     CLI(net, script=cmd_file_path)
+
+    #     print("Mininet script finished. Stopping network...")
+    #     net.stop()
+    #     os.remove(cmd_file_path)
+        
+    #     completion_times = self.parse_logs()
+    #     return completion_times
+
+
     def run_experiment(self, c_value):
-        print(f"Running experiment with c={c_value} on Mininet...")
+        """Run single experiment with given c value"""
+        print(f"Running experiment with c={c_value}")
+        
+        # Clean logs
         self.cleanup_logs()
         
+        # Create network
+        from topology import create_network
         net = create_network(num_clients=self.num_clients)
         
-        # Create a command script for Mininet CLI
-        cmd_file_path = 'run_commands.txt'
-        with open(cmd_file_path, 'w') as f:
-            f.write('server python3 server.py &\n')
-            f.write('py time.sleep(3)\n') # Give server time to start
-            # Start clients, rogue first, then normal ones
-            f.write(f'client1 python3 client.py --batch-size {c_value} --client-id rogue &\n')
-            for i in range(2, self.num_clients + 1):
-                f.write(f'client{i} python3 client.py --batch-size 1 --client-id normal_{i} &\n')
-            f.write('py print("Waiting for clients to finish...")\n')
-            f.write('py time.sleep(20)\n') # Generous wait time for clients
-            f.write('py print("Clients should be finished. Exiting.")\n')
-            f.write('exit\n')
-
-        print("Starting Mininet CLI and executing commands...")
-        CLI(net, script=cmd_file_path)
-
-        print("Mininet script finished. Stopping network...")
-        net.stop()
-        os.remove(cmd_file_path)
+        try:
+            # Get hosts
+            server = net.get('server')
+            clients = [net.get(f'client{i+1}') for i in range(self.num_clients)]
+            
+            # Start server (students create server.py)
+            print("Starting server...")
+            server_proc = server.popen("python3 server.py")
+            time.sleep(3)
+            
+            # Start clients
+            print("Starting clients...")
+            # Client 1 is rogue (batch size c)
+            rogue_proc = clients[0].popen(f"python3 client.py --batch-size {c_value} --client-id rogue")
+            
+            # Clients 2-N are normal (batch size 1)
+            normal_procs = []
+            for i in range(1, self.num_clients):
+                proc = clients[i].popen(f"python3 client.py --batch-size 1 --client-id normal_{i+1}")
+                normal_procs.append(proc)
+            
+            # Wait for all clients
+            rogue_proc.wait()
+            for proc in normal_procs:
+                proc.wait()
+            
+            # Stop server
+            server_proc.terminate()
+            server_proc.wait()
+            time.sleep(2)
+            
+            # Parse results
+            time.sleep(1)
+            results = self.parse_logs()
+            
+            return results
+            
+        finally:
+            net.stop()
         
-        completion_times = self.parse_logs()
-        return completion_times
 
     def run_varying_c(self):
         c_values = list(range(1, 11))
