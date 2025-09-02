@@ -8,10 +8,11 @@ def main(config):
     k = config["k"]
     p = 0
     port = config["server_port"]
-
+    print(f"host={host}, port={port}, k={k}")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        
         s.connect((host, port))
-        print("Connected to server.")
+        print("[client] Connected to server.")
 
         download_time = 0
         while True:
@@ -21,10 +22,15 @@ def main(config):
             data = s.recv(1024)
             recv_time = time.time()
             download_time += recv_time - send_time
-            print("Server replied:", data.decode())
+            print("[client] Server replied:", data.decode())
+            decoded_data = data.decode()
 
-            if "EOF\n" in data.split(",") or "EOF" in data.split(","):
+            print("Token check")
+            if "EOF\n" in decoded_data.split(",") or "EOF" in decoded_data.split(","):
+                print(f"[client] Received EOF, exiting")
                 break
+            print("[client] No EOF, continuing")
+            p += k
         
         print(f"ELAPSED_MS:{download_time*1000}")
 
