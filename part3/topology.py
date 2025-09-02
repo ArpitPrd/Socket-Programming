@@ -46,9 +46,9 @@ if __name__ == '__main__':
     
     # Test with hardcoded configuration
     print(f"Creating network with {DEFAULT_CLIENTS} clients")
-    print(f"All links bandwidth: {BANDWIDTH} Mbps (hardcoded)")
-    print(f"All links delay: {DELAY}")
-    print(f"All links buffer: {BUFFER_SIZE} packets")
+    #print(f"All links bandwidth: {BANDWIDTH} Mbps (hardcoded)")
+    #print(f"All links delay: {DELAY}")
+    #print(f"All links buffer: {BUFFER_SIZE} packets")
     
     net = create_network()  # Uses hardcoded values
     
