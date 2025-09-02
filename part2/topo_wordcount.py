@@ -8,7 +8,7 @@ class WordCountTopo(Topo):
     def build(self, n):
         s1 = self.addSwitch('s1')
         
-        for i in range(1, n+1):
+        for i in range(0, n+1):
 
             host = self.addHost(f"h{i}", ip=f"10.0.0.{i}/24")
             self.addLink(host, s1, cls=TCLink, bw=100)

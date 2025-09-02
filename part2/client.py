@@ -1,6 +1,7 @@
 import socket
 import argparse
 import json
+import time
 
 def main(config):
     host = config["server_ip"]
@@ -12,17 +13,20 @@ def main(config):
         s.connect((host, port))
         print("Connected to server.")
 
+        download_time = 0
         while True:
             message = f"{p},{k}\n"
+            send_time = time.time()
             s.send(message.encode())
             data = s.recv(1024)
+            recv_time = time.time()
+            download_time += recv_time - send_time
             print("Server replied:", data.decode())
 
-            if "EOF" in data.split(","):
+            if "EOF\n" in data.split(",") or "EOF" in data.split(","):
                 break
         
-        message = "STOP"
-        s.send(message.encode())
+        print(f"ELAPSED_MS:{download_time*1000}")
 
 def read_json(filename) -> dict:
     with open(filename) as f:

@@ -8,10 +8,9 @@ from topo_wordcount import make_net
 import json
 
 # Config
-K_VALUES = [1, 2, 5, 10, 20, 50, 100]#, 200, 400, 800]   
+K_VALUE = 20
 RUNS_PER_K = 5
-SERVER_CMD = "./server --config config.json"
-CLIENT_CMD_TMPL = "./client --config config.json"
+SERVER_CMD = "python3 server.py --config config.json"
 
 RESULTS_CSV = Path("results.csv")
 
@@ -34,16 +33,39 @@ def modify_config(
     
     return
 
+def read_json(filename="config.json") -> dict:
+    with open(filename) as f:
+        data = json.load(f)  
+    return data
+
+def end_server(srv):
+    srv.terminate()
+    time.sleep(0.2)
+    return
+
+def elaspsed_ms(out):
+    m = re.search(r"ELAPSED_MS:(\d+)", out)
+    if not m:
+        print(f"[warn] No ELAPSED_MS found. Raw:\n{out}")
+        return -1
+    return int(m.group(1))
+
 def main():
+    data = read_json()
+    NUM_CLIENTS = data["num_clients"]
+
     # Prepare CSV
     with RESULTS_CSV.open("w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["k", "run", "elapsed_ms"])
+        w.writerow(["nc", "r", "elapsed_ms"])
 
     net = make_net()
     net.start()
 
-    h_server = net.get("h1")
+    h_server = net.get("h0")
+    
+
+    clients = [net.get(f"h{i}") for i in range(1, NUM_CLIENTS+1)]
 
     # Ensure words.txt exists (shared FS)
     if not Path("words.txt").exists():
@@ -51,35 +73,34 @@ def main():
 
 
     try:
-        for k in K_VALUES:
+        for nc in NUM_CLIENTS:
+            
+            modify_config("num_clients", nc)
+            
             for r in range(1, RUNS_PER_K + 1):
-
-                print(f"k={k},r={r}")
-                modify_config("k", k) # should implement this function
-                
                 # Start server
-                srv = h2.popen(SERVER_CMD, shell=True)
-                time.sleep(0.5)  # give it a moment to bind                
+                srv = h_server.popen(SERVER_CMD, shell=True)
+                time.sleep(0.5)
 
-                cmd = CLIENT_CMD_TMPL
-                # this is just command line stuff, executes and closes
-                out = h1.cmd(cmd)
+                clients = [net.get(f"h{i}") for i in range(1, nc+1)]
+                procs = [h.popen("python3 client.py") for h in clients]
                 
-                # parse ELAPSED_MS
-                m = re.search(r"ELAPSED_MS:(\d+)", out)
-                if not m:
-                    print(f"[warn] No ELAPSED_MS found for k={k} run={r}. Raw:\n{out}")
-                    continue
-                ms = int(m.group(1))
+                outs = [p.communicate()[0].decode() for p in procs]
+
+                elaspsed_mss_list = [elaspsed_ms(out) for out in outs]
+
+                end_server(srv)
+                
+                
+                avg_compl_per_client_ms = sum(elaspsed_mss_list) / len(elaspsed_mss_list)
+
+
+                print(f"[info] n_clients={nc}, run={r}, avg_compl_time_per_person={avg_compl_per_client_ms}")
                 with RESULTS_CSV.open("a", newline="") as f:
-                    csv.writer(f).writerow([k, r, ms])
-                print(f"k={k} run={r} elapsed_ms={ms}")
-                print(out)
-                srv.terminate()
-                time.sleep(0.2)
+                    w = csv.writer(f)
+                    w.writerow([nc, r, avg_compl_per_client_ms])
     finally:
-        srv.terminate()
-        time.sleep(0.2)
+        end_server(srv) 
         net.stop()
 
 if __name__ == "__main__":

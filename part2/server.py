@@ -27,7 +27,7 @@ def main(config):
     port = config["server_port"]
     words_file = config["filename"]
     with open(words_file) as f:
-        words = f.readline()
+        words = f.read()
 
     # Create listening socket same as C
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -55,8 +55,6 @@ def main(config):
                     recv_data = read_socket.recv(1024)
                     if recv_data:
                         message = recv_data.decode()
-                        if message=="STOP":
-                            clear_connection(read_socket, sockets_list, clients)
                         
                         send_message = handle_request(message, words)
                         read_socket.sendall(send_message.encode())
@@ -67,14 +65,12 @@ def main(config):
                 
                 except ConnectionResetError:
                     print(f"Connection reset by {clients[read_socket]}")
-                    clear_connection(read_socket)
+                    clear_connection(read_socket, sockets_list, clients)
 
         # Handle exceptions
         for read_socket in exception_sockets:
-            clear_connection(read_socket)
+            clear_connection(read_socket, sockets_list, clients)
 
-        if len(sockets_list)==0:
-            break
 
 def read_json(filename) -> dict:
     with open(filename) as f:
