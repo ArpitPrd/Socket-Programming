@@ -14,11 +14,19 @@ class Runner:
     def __init__(self, config_file='config.json'):
         with open(config_file, 'r') as f:
             self.config = json.load(f)
-        self.num_clients = self.config.get('num_clients', 10)
-        self.c = self.config.get('c', 1)
-        # Create results directory
+        
+
+        self.server_ip = self.config['server_ip']
+        self.port = self.config['server_port']
+        self.num_clients = self.config['num_clients']
+        self.c = self.config['c']  # Batch size for rogue client
+        self.p = self.config['p']  # Offset (always 0) since we want to download the full file
+        self.k = self.config['k']  # Words per request (always 5)
+        
+        print(f"Config: {self.num_clients} clients, c={self.c}, p={self.p}, k={self.k}")
+
         os.makedirs('results_part4', exist_ok=True)
-        print(f"Config: {self.num_clients} clients, c={self.c}")
+        #print(f"Config: {self.num_clients} clients, c={self.c}")
 
     def cleanup_logs(self):
         if not os.path.exists('logs'):

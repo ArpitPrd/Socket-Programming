@@ -42,18 +42,19 @@ def create_network(num_clients=DEFAULT_CLIENTS):
     return net
 
 if __name__ == '__main__':
-    # This block is for running the script directly to get a Mininet CLI.
     setLogLevel('info')
     
-    print(f"Creating network with {DEFAULT_CLIENTS} clients...")
-    net = create_network()
+    # Test with hardcoded configuration
+    print(f"Creating network with {DEFAULT_CLIENTS} clients")
+    #print(f"All links bandwidth: {BANDWIDTH} Mbps (hardcoded)")
+    #print(f"All links delay: {DELAY}")
+    #print(f"All links buffer: {BUFFER_SIZE} packets")
     
-    print("\nNetwork created successfully! Mininet CLI is ready.")
-    print("Use 'xterm server client1' to open terminals for the hosts.")
+    net = create_network()  # Uses hardcoded values
     
-    # Start the Mininet command-line interface
+    print("Network created successfully!")
+    print("Hosts:", [h.name for h in net.hosts])
+    print("Links:", [(link.intf1.node, link.intf2.node) for link in net.links])
+    
     CLI(net)
-    
-    # This will run when you exit the CLI
-    print("Stopping network...")
     net.stop()
