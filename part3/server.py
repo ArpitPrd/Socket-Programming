@@ -38,8 +38,7 @@ class FCFSServer:
                     if request:
                         self.request_queue.put((client_socket, request.strip()))
         except ConnectionResetError:
-            pass # Client disconnected abruptly
-        finally:
+            pass 
             print(f"Client {client_address} disconnected.")
             client_socket.close()
 

@@ -26,13 +26,13 @@ class WordCountClient:
     def download_file(self):
         self.start_time = time.time()
         all_words = []
-        words_to_get = 200 # Assuming words.txt has 200 words
+        words_to_get = 200 
         
         try:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             client_socket.connect((self.server_ip, self.server_port))
             
-            # Send initial batch of requests
+            
             num_initial_requests = self.greedy_requests if self.is_greedy else 1
             for i in range(num_initial_requests):
                 request = f"{i * self.k},{self.k}\n"
@@ -42,7 +42,7 @@ class WordCountClient:
             
             response_buffer = ""
             while len(all_words) < words_to_get:
-                # Receive until we have at least one full response
+                
                 while '\n' not in response_buffer:
                     data = client_socket.recv(1024).decode('utf-8')
                     if not data:
@@ -62,7 +62,7 @@ class WordCountClient:
                 words = [w for w in response.split(',') if w]
                 all_words.extend(words)
 
-                # If not done, send the next request
+                
                 if len(all_words) < words_to_get:
                     request = f"{requests_sent * self.k},{self.k}\n"
                     client_socket.sendall(request.encode('utf-8'))

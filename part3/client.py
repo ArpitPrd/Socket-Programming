@@ -1,6 +1,3 @@
-"""
-Part 3: Client implementation with a PERSISTENTLY greedy behavior
-"""
 import socket
 import json
 import time
@@ -18,7 +15,7 @@ class WordCountClient:
         self.k = self.config.get('k', 5)
         self.client_id = client_id
         self.is_greedy = is_greedy
-        self.window_size = greedy_requests # 'c' is the window size
+        self.window_size = greedy_requests 
         self.word_count = defaultdict(int)
         self.start_time = None
         self.end_time = None
@@ -26,7 +23,7 @@ class WordCountClient:
     def download_file(self):
         self.start_time = time.time()
         all_words = []
-        words_to_get = 200 # Total words in words.txt
+        words_to_get = 200 
 
         try:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -34,7 +31,7 @@ class WordCountClient:
 
             requests_sent = 0
             
-            # Send the initial window of requests
+           
             for i in range(self.window_size):
                 request = f"{requests_sent * self.k},{self.k}\n"
                 client_socket.sendall(request.encode('utf-8'))
@@ -42,10 +39,10 @@ class WordCountClient:
             
             response_buffer = ""
             while len(all_words) < words_to_get:
-                # Wait for one response
+                
                 while '\n' not in response_buffer:
                     data = client_socket.recv(1024).decode('utf-8')
-                    if not data: # Server closed connection
+                    if not data: 
                         break
                     response_buffer += data
                 
@@ -57,12 +54,11 @@ class WordCountClient:
                 if "EOF" in response:
                     words = [w for w in response.split(',') if w and w != 'EOF']
                     all_words.extend(words)
-                    break # We are done
+                    break 
                 
                 words = [w for w in response.split(',') if w]
                 all_words.extend(words)
 
-                # As soon as we get a response, send the next request to keep the window full
                 if requests_sent * self.k < words_to_get:
                     request = f"{requests_sent * self.k},{self.k}\n"
                     client_socket.sendall(request.encode('utf-8'))
@@ -98,8 +94,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     client = WordCountClient(
         client_id=args.client_id,
-        is_greedy=True, # All clients now use the windowing logic
-        greedy_requests=args.batch_size # Normal clients will have a window of 1
+        is_greedy=True, 
+        greedy_requests=args.batch_size 
     )
     if client.download_file():
         client.log_results()

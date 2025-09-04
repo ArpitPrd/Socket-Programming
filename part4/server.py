@@ -1,6 +1,4 @@
-"""
-Part 4: Round-Robin Server that enforces fairness among clients
-"""
+
 import socket
 import threading
 import json
@@ -14,17 +12,17 @@ class RoundRobinServer:
         with open(config_file, 'r') as f:
             self.config = json.load(f)
         
-        self.host = '0.0.0.0' # Listen on all interfaces for Mininet
+        self.host = '0.0.0.0' 
         self.port = self.config.get('server_port', 12345)
         self.filename = self.config.get('filename', 'words.txt')
         self.load_words()
 
-        # Structures for Round-Robin scheduling
-        self.client_queues = {}  # client_id -> queue of requests
-        self.client_order = deque()  # Order of clients to serve
+      
+        self.client_queues = {}  
+        self.client_order = deque()  
         self.clients_lock = threading.Lock()
         self.client_counter = 0
-        self.client_sockets = {}  # client_id -> socket
+        self.client_sockets = {} 
 
     def load_words(self):
         try:
@@ -63,7 +61,7 @@ class RoundRobinServer:
                     del self.client_queues[client_id]
                 if client_id in self.client_sockets:
                     del self.client_sockets[client_id]
-                # Use a temporary list to safely remove the client_id
+                
                 temp_order = list(self.client_order)
                 if client_id in temp_order:
                     temp_order.remove(client_id)
@@ -77,12 +75,12 @@ class RoundRobinServer:
                 if not self.client_order:
                     time.sleep(0.01)
                     continue
-                # Rotate to the next client
+                
                 client_id = self.client_order.popleft()
                 self.client_order.append(client_id)
             
             try:
-                # Get one request from this client's queue without blocking
+                
                 request = self.client_queues[client_id].get_nowait()
             except (queue.Empty, KeyError):
                 continue
@@ -101,7 +99,6 @@ class RoundRobinServer:
                     response = ','.join(selected) + '\n'
                 client_socket.sendall(response.encode('utf-8'))
             except (ValueError, KeyError, ConnectionResetError):
-                # Handle errors if client disconnects or sends bad data
                 continue
 
     def start(self):

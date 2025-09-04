@@ -64,31 +64,6 @@ class Runner:
         jfi = (sum_throughputs ** 2) / (n * sum_squares)
         return jfi
 
-    # def run_experiment(self, c_value):
-    #     print(f"Running experiment with c={c_value} on Mininet...")
-    #     self.cleanup_logs()
-        
-    #     net = create_network(num_clients=self.num_clients)
-        
-    #     # Start server and clients using Mininet CLI for stability
-    #     cmd_file_path = 'run_commands.txt'
-    #     with open(cmd_file_path, 'w') as f:
-    #         f.write('server python3 server.py &\n')
-    #         f.write('py time.sleep(3)\n')
-    #         f.write(f'client1 python3 client.py --batch-size {c_value} --client-id rogue &\n')
-    #         for i in range(2, self.num_clients + 1):
-    #             f.write(f'client{i} python3 client.py --batch-size 1 --client-id normal_{i} &\n')
-    #         # Wait for all background jobs to finish. A simple long sleep is sufficient here.
-    #         f.write('py time.sleep(15)\n')
-    #         f.write('exit\n')
-
-    #     CLI(net, script=cmd_file_path)
-    #     net.stop()
-    #     os.remove(cmd_file_path)
-        
-    #     return self.parse_logs()
-
-
     def run_experiment(self, c_value):
         """Run single experiment with given c value"""
         print(f"Running experiment with c={c_value}")
@@ -172,17 +147,11 @@ class Runner:
         # Plot Round-Robin
         plt.plot(c_values, rr_jfi, marker='o', linestyle='-', color='green', label='Round-Robin Scheduling')
 
-        # Load and plot FCFS data from Part 3 for comparison
-        try:
-            with open('../part3/results_part4/jfi_results.json', 'r') as f:
-                fcfs_results = json.load(f)
-                plt.plot(c_values, fcfs_results['avg_jfi'], marker='s', linestyle='--', color='red', label='FCFS Scheduling (from Part 3)')
-        except FileNotFoundError:
-            print("Could not find Part 3 results for comparison plot.")
+        
 
         plt.xlabel('Number of Parallel Requests by Greedy Client (c)')
         plt.ylabel("Jain's Fairness Index (JFI)")
-        plt.title('Fairness Comparison: Round-Robin vs. FCFS')
+        plt.title('Round-Robin')
         plt.grid(True, alpha=0.3)
         plt.xticks(c_values)
         plt.ylim(0.7, 1.1)
