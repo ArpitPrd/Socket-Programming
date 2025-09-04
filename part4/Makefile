@@ -7,7 +7,7 @@ else
     SUDO =
 endif
 
-PYTHON = /home/prd/COL334/myenv/bin/python3
+PYTHON = python3
 CONFIG = config.json
 PLOT_SCRIPT = runner.py
 

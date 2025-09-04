@@ -6,14 +6,16 @@ else
     SUDO =
 endif
 
-PYTHON = /home/prd/COL334/myenv/bin/python3
+PYTHON = python3
 CONFIG = config.json
 PLOT_SCRIPT = runner.py
 
 
 
 run-fcfs: 
-	sudo /home/prd/COL334/myenv/bin/python3 runner.py --single-run
+	@echo "Running a single FCFS experiment on Mininet..."
+	@$(SUDO) $(PYTHON) $(PLOT_SCRIPT) --single-run
+	@echo "Single experiment complete. Check terminal for results."
 
 plot: 
 	@echo "Running experiments for varying c values and generating plot on Mininet..."
