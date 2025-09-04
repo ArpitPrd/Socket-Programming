@@ -458,3 +458,15 @@ This means P and K values are being taken from the environment. So in your make 
     - make plot:
         - runs for varying k, num_repetion number of time
         - generates p1_plot.png
+
+
+## Part 3
+
+- FCFS may become biased to greedy servers
+
+- JFI index, indicating fairness vs number of back to back requests, here assumed k = 5, 
+
+- FCFS: monopolize
+- RR: can client still monopoize under certain situations?
+
+- running 5 times necessary?
