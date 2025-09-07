@@ -3,7 +3,9 @@ build:
 	g++ server.cpp -o server
 
 run:
-	sudo python3 demo_runner.py
+	echo $P
+	sudo K=$(K) P=$(P) python3 demo_runner.py
+
 .PHONY: plot
 plot:
 	sudo python3 run_experiments.py

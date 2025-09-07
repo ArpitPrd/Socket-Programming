@@ -11,7 +11,7 @@ import json
 K_VALUES = [1, 2, 5, 10, 20, 50, 100]#, 200, 400, 800]   
 RUNS_PER_K = 5
 SERVER_CMD = "./server --config config.json"
-CLIENT_CMD_TMPL = "./client --config config.json"
+CLIENT_CMD_TMPL = "./client --config config.json "
 
 RESULTS_CSV = Path("results.csv")
 
@@ -55,7 +55,7 @@ def main():
         for k in K_VALUES:
             for r in range(1, RUNS_PER_K + 1):
 
-                print(f"k={k},r={r}")
+                # print(f"k={k},r={r}")
                 modify_config("k", k) # should implement this function
                 
                 # Start server

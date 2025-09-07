@@ -114,7 +114,7 @@ void print_freq(string message) {
 
     /* printing the word */
     for (auto &p : freq) {
-        if (p.first != "EOF\n") {
+        if (p.first != "EOF") {
             cout << p.first << ", " << p.second << endl;
         }
     }
@@ -139,14 +139,9 @@ bool eof(vector<string> words) {
 int main(int argc, char * argv[]) {
 
     string config_file = "config.json";
-    map<string, string> info = parse_json(config_file);
-    string server_ip=info["server_ip"];
-
-    int p=stoi(info["p"]);
-    int k=stoi(info["k"]);
-    int port=stoi(info["server_port"]);
+    
     bool single_run = false, quiet=false;
-
+    int k = -1, p = -1;
     for (int i = 1; i < argc; i++) {
         string flag = argv[i];
 
@@ -167,9 +162,19 @@ int main(int argc, char * argv[]) {
         if (flag=="--quiet") {
             quiet = true;
         }
+
+        if (flag=="--p") {
+            p = stoi(argv[i+1]);
+            i++;
+        }
     }
 
+    map<string, string> info = parse_json(config_file);
+    string server_ip=info["server_ip"];
 
+    if (p==-1) p=stoi(info["p"]);
+    if (k==-1) k=stoi(info["k"]);
+    int port=stoi(info["server_port"]);
     
     int client_socket_fd = socket(AF_INET, SOCK_STREAM, 0); // the file descriptor of the client
     
@@ -192,6 +197,8 @@ int main(int argc, char * argv[]) {
     
     double file_download_time = 0;
     string full_doc = "";
+    cout << "p=" << p << "," << "k=" << k << endl;
+    cout << config_file << endl;
     while (true) {
         /* prepare the messahge */
         string send_message = to_string(p) + string(",") + to_string(k) + "\n";
@@ -205,7 +212,7 @@ int main(int argc, char * argv[]) {
         hrc start = now();
 
         /* send the message to the server, message can be found on the file descriptor */
-        cout << "sending request" << endl;
+        // cout << "sending request" << endl;
         send(client_socket_fd, send_buffer, send_message.size(), 0);
 
         int bytes_received = recv(client_socket_fd, recv_buffer, sizeof(recv_buffer), 0);
@@ -222,24 +229,26 @@ int main(int argc, char * argv[]) {
         file_download_time += delta;
 
         full_doc += recv_message;
-
+        if (!quiet) {
+            print_freq(recv_message);
+        }
         vector<string> words = split(recv_message, ',');
         if (eof(words)) {
             break;
         }
 
-        if (single_run) break;
+        // if (single_run) break;
 
         p += k;
     }
 
-    /* telling the server I am done */
-    string send_message = "STOP";
-    const char* send_buffer = send_message.c_str();
-    send(client_socket_fd, send_buffer, send_message.size(), 0);
+    // /* telling the server I am done */
+    // string send_message = "STOP";
+    // const char* send_buffer = send_message.c_str();
+    // send(client_socket_fd, send_buffer, send_message.size(), 0);
 
     /*diplaying ELAPSED_MS*/
-    if (!quiet) cout << "ELAPSED_MS:" << file_download_time << endl;
+    cout << "ELAPSED_MS:" << file_download_time << endl;
 
     /* clolsing the client socket */
     close(client_socket_fd);

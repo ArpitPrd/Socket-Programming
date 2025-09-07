@@ -470,3 +470,12 @@ This means P and K values are being taken from the environment. So in your make 
 - RR: can client still monopoize under certain situations?
 
 - running 5 times necessary?
+
+
+
+## Submission Changes
+
+- change file name to pi_plot.png
+- change p, k to receive the entire file
+
+- contrast between api  
