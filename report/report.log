@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.8.13)  4 SEP 2025 22:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.8.13)  7 SEP 2025 15:00
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -415,20 +415,20 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 71.
  (/home/arpit/.miktex/texmfs/install/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-</home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part1/p1_plot.png, id=51, 406.318pt x 326.821pt>
-File: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part1/p1_plot.png Graphic file (type png)
-<use /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part1/p1_plot.png>
-Package pdftex.def Info: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part1/p1_plot.png  used on input line 75.
+</home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part1/p1_plot_use.png, id=51, 406.318pt x 326.821pt>
+File: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part1/p1_plot_use.png Graphic file (type png)
+<use /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part1/p1_plot_use.png>
+Package pdftex.def Info: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part1/p1_plot_use.png  used on input line 75.
 (pdftex.def)             Requested size: 375.80544pt x 302.27974pt.
 
 
 [1
 
-{/home/arpit/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map} </home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part1/p1_plot.png>]
-</home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part2/p2_plot.png, id=64, 438.8395pt x 327.2225pt>
-File: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part2/p2_plot.png Graphic file (type png)
-<use /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part2/p2_plot.png>
-Package pdftex.def Info: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part2/p2_plot.png  used on input line 120.
+{/home/arpit/.miktex/texmfs/data/fonts/map/pdftex/pdftex.map} </home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part1/p1_plot_use.png>]
+</home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part2/p2_plot_use.png, id=63, 438.8395pt x 327.2225pt>
+File: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part2/p2_plot_use.png Graphic file (type png)
+<use /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part2/p2_plot_use.png>
+Package pdftex.def Info: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part2/p2_plot_use.png  used on input line 120.
 (pdftex.def)             Requested size: 375.80544pt x 280.2325pt.
 
 
@@ -438,19 +438,19 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [2]
 
-[3 </home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part2/p2_plot.png>]
-</home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part3/p3_plot.png, id=98, 722.7pt x 433.62pt>
-File: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part3/p3_plot.png Graphic file (type png)
-<use /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part3/p3_plot.png>
-Package pdftex.def Info: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part3/p3_plot.png  used on input line 155.
+[3 </home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part2/p2_plot_use.png>]
+</home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part3/p3_plot_use.png, id=97, 722.7pt x 433.62pt>
+File: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part3/p3_plot_use.png Graphic file (type png)
+<use /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part3/p3_plot_use.png>
+Package pdftex.def Info: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part3/p3_plot_use.png  used on input line 155.
 (pdftex.def)             Requested size: 375.80544pt x 225.48369pt.
 
 
-[4 </home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part3/p3_plot.png>]
-</home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part4/p4_plot.png, id=111, 722.7pt x 433.62pt>
-File: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part4/p4_plot.png Graphic file (type png)
-<use /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part4/p4_plot.png>
-Package pdftex.def Info: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part4/p4_plot.png  used on input line 191.
+[4 </home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part3/p3_plot_use.png>]
+</home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part4/p4_plot_use.png, id=110, 722.7pt x 433.62pt>
+File: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part4/p4_plot_use.png Graphic file (type png)
+<use /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part4/p4_plot_use.png>
+Package pdftex.def Info: /home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part4/p4_plot_use.png  used on input line 191.
 (pdftex.def)             Requested size: 375.80544pt x 225.48369pt.
 
 
@@ -460,7 +460,7 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [5]
 
-[6 </home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part4/p4_plot.png>] (report.aux)
+[6 </home/arpit/Desktop/iitd/sem_7/COL334/projects/Socket-Programming/part4/p4_plot_use.png>] (report.aux)
  ***********
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2025-07-20>
@@ -469,17 +469,17 @@ Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: ECAE2C7A235C776D1CC0DAC9978F03D2;2078.
  ) 
 Here is how much of TeX's memory you used:
- 12622 strings out of 468135
- 191547 string characters out of 5435616
+ 12623 strings out of 468135
+ 191677 string characters out of 5435616
  618096 words of memory out of 5000000
- 41017 multiletter control sequences out of 15000+600000
- 635588 words of font info for 74 fonts, out of 8000000 for 9000
+ 41018 multiletter control sequences out of 15000+600000
+ 635895 words of font info for 75 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,6n,79p,616b,636s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</home/arpit/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmbx12.pfb></home/arpit/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmmi12.pfb></home/arpit/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmmi8.pfb></home/arpit/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmr12.pfb></home/arpit/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmr17.pfb>
-Output written on report.pdf (6 pages, 251623 bytes).
+</home/arpit/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmbx12.pfb></home/arpit/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmmi12.pfb></home/arpit/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmmi8.pfb></home/arpit/.miktex/texmfs/install/fonts/type1/public/amsfonts/cm/cmr12.pfb>
+Output written on report.pdf (6 pages, 235577 bytes).
 PDF statistics:
- 186 PDF objects out of 1000 (max. 8388607)
+ 181 PDF objects out of 1000 (max. 8388607)
  75 named destinations out of 1000 (max. 500000)
  117 words of extra memory for PDF output out of 10000 (max. 10000000)
 
