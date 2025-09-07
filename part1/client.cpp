@@ -197,8 +197,8 @@ int main(int argc, char * argv[]) {
     
     double file_download_time = 0;
     string full_doc = "";
-    cout << "p=" << p << "," << "k=" << k << endl;
-    cout << config_file << endl;
+    // cout << "p=" << p << "," << "k=" << k << endl;
+    // cout << config_file << endl;
     while (true) {
         /* prepare the messahge */
         string send_message = to_string(p) + string(",") + to_string(k) + "\n";
@@ -254,6 +254,6 @@ int main(int argc, char * argv[]) {
     close(client_socket_fd);
 
     /* use this recieved buffer for further manipulations */
-    if (!quiet) print_freq(full_doc);
+    // if (!quiet) print_freq(full_doc);
     
 }

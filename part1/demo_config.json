@@ -1,1 +1,1 @@
-{"server_ip": "10.0.0.2", "server_port": 5914, "k": 10, "p": 20, "filename": "words.txt", "num_iterations": 5}
+{"server_ip": "10.0.0.2", "server_port": 6045, "k": 100, "p": 759, "filename": "words.txt", "num_iterations": 5}

@@ -26,7 +26,7 @@ def modify_config(
     json_file = open(config_filename, 'r')
     data = json.load(json_file)
     data[key] = value
-    data["server_port"] += 1
+    # data["server_port"] += 1
     json_file.close()
 
     with open(config_filename, 'w') as f:
