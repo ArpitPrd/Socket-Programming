@@ -25,11 +25,9 @@ def main(config):
             print("[client] Server replied:", data.decode())
             decoded_data = data.decode()
 
-            print("Token check")
             if "EOF\n" in decoded_data.split(",") or "EOF" in decoded_data.split(","):
                 print(f"[client] Received EOF, exiting")
                 break
-            print("[client] No EOF, continuing")
             p += k
         
         print(f"ELAPSED_MS:{download_time*1000}")

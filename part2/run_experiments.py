@@ -50,11 +50,10 @@ def elaspsed_ms(out):
 
 def main(single_run: bool = False):
     data = read_json()
-    NUM_CLIENTS_LIST = data["num_clients"]
-    NUM_CLIENTS = list(range(1, NUM_CLIENTS_LIST+1, 4)) if NUM_CLIENTS_LIST > 4 else [NUM_CLIENTS_LIST]
-    NUM_CLIENTS.append(32)
-    NUM_CLIENTS = [1] if single_run else NUM_CLIENTS
-
+    NUM_CLIENTS = data["num_clients"]
+    NUM_CLIENTS_LIST = list(range(1, NUM_CLIENTS+1, 4)) if not single_run else []
+    NUM_CLIENTS_LIST.append(NUM_CLIENTS)
+    
     with RESULTS_CSV.open("w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["nc", "r", "elapsed_ms"])
@@ -62,7 +61,7 @@ def main(single_run: bool = False):
     if not Path("words.txt").exists():
         Path("words.txt").write_text("cat,bat,cat,dog,dog,emu,emu,emu,ant\n")
 
-    for nc in NUM_CLIENTS:
+    for nc in NUM_CLIENTS_LIST:
         for r in range(1, RUNS_PER_K + 1):
             print(f"[info] Running experiment: n_clients={nc}, run={r}")
             srv = None
@@ -89,8 +88,7 @@ def main(single_run: bool = False):
                 time.sleep(0.2)
 
                 elaspsed_mss_list = [elaspsed_ms(out) for out in outs]
-                avg_ms = sum(elaspsed_mss_list) / len(elaspsed_mss_list)
-                print(f"[info] n_clients={nc}, run={r}, avg={avg_ms}")
+                avg_ms = sum(elaspsed_mss_list) / len(elaspsed_mss_list)                
 
                 with RESULTS_CSV.open("a", newline="") as f:
                     csv.writer(f).writerow([nc, r, avg_ms])
@@ -98,7 +96,7 @@ def main(single_run: bool = False):
                 if single_run:
                     print("Single run, exiting")
                     return
-
+                print(f"[info] n_clients={nc}, run={r}, avg={avg_ms}")
             finally:
                 if srv is not None:
                     try:
