@@ -17,9 +17,10 @@ def handle_request(message: str, words: list[str]) -> str:
     except (ValueError, IndexError):
         return "ERROR: Invalid request\n"
 
+    # print(f"{p},{k}")
     if p >= len(words):
         return "EOF\n"
-    elif p + k >= len(words):
+    elif p + k > len(words):
         return ",".join(words[p:]) + ",EOF\n"
     else:
         return ",".join(words[p:p+k]) + "\n"
@@ -32,6 +33,7 @@ def main(config):
     print(f"[server] Starting server on {host}:{port}, words_file={words_file}", flush=True)
     with open(words_file) as f:
         words = f.read().split(",")
+        words = [w.split("\n")[0] for w in words]
 
     # Create listening socket same as C
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

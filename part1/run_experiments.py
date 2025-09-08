@@ -34,7 +34,25 @@ def modify_config(
     
     return
 
+def get_val(
+        key:str, 
+        config_filename="config.json", 
+    ):
+    """
+    changes this particular key with the corresponding value, if not present then adds this key to the file
+    """
+    json_file = open(config_filename, 'r')
+    data = json.load(json_file)
+    value = data[key]
+    json_file.close()
+
+    return value
+
+
 def main():
+
+    RUNS_PER_K = get_val("num_iterations")
+
     # Prepare CSV
     with RESULTS_CSV.open("w", newline="") as f:
         w = csv.writer(f)

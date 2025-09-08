@@ -202,6 +202,7 @@ int main(int argc, char * argv[]) {
     while (true) {
         /* prepare the messahge */
         string send_message = to_string(p) + string(",") + to_string(k) + "\n";
+        cout << send_message << endl;
         const char* send_buffer = send_message.c_str();
 
         /* recieve any message from the server */

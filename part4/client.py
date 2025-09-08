@@ -53,7 +53,7 @@ class WordCountClient:
                     break
 
                 response, response_buffer = response_buffer.split('\n', 1)
-                
+                print(response)
                 if "EOF" in response:
                     words = [w for w in response.split(',') if w and w != 'EOF']
                     all_words.extend(words)

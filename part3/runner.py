@@ -99,7 +99,12 @@ class Runner:
             rogue_proc.wait()
             for proc in normal_procs:
                 proc.wait()
-            
+            rogue_out = rogue_proc.communicate()[0].decode()
+            normal_outs = [p.communicate()[0].decode() for p in normal_procs]
+            print(f"output of rogue: {rogue_out}")
+            print(f"output of normal clients: ")
+            for i, normal_out in enumerate(normal_outs):
+                print(f"Client {i+1}, Output: {normal_out}")
             # Stop server
             server_proc.terminate()
             server_proc.wait()

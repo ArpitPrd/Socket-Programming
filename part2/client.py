@@ -6,7 +6,7 @@ import time
 def main(config):
     host = config["server_ip"]
     k = config["k"]
-    p = 0
+    p = config["p"]
     port = config["server_port"]
     print(f"host={host}, port={port}, k={k}")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

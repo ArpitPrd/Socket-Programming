@@ -50,6 +50,7 @@ def elaspsed_ms(out):
 
 def main(single_run: bool = False):
     data = read_json()
+    RUNS_PER_K = data["num_iterations"]
     NUM_CLIENTS = data["num_clients"]
     NUM_CLIENTS_LIST = list(range(1, NUM_CLIENTS+1, 4)) if not single_run else []
     NUM_CLIENTS_LIST.append(NUM_CLIENTS)
@@ -80,7 +81,7 @@ def main(single_run: bool = False):
 
                 clients = [net.get(f"h{i}") for i in range(1, nc+1)]
                 procs = [h.popen("python3 client.py") for h in clients]
-
+                # print(f"[server] {srv.communicate()[0].decode()}")
                 outs = [p.communicate()[0].decode() for p in procs]
 
                 # Don’t call communicate() on srv (no real pipes)
