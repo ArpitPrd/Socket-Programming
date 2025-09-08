@@ -6,6 +6,7 @@ from mininet.node import OVSSwitch
 from mininet.cli import CLI
 from mininet.log import setLogLevel
 from mininet.link import TCLink
+import json
 
 # Default number of clients
 DEFAULT_CLIENTS = 10
@@ -18,8 +19,12 @@ class SimpleTopo(Topo):
         # Create switch
         switch = self.addSwitch('s1', cls=OVSSwitch)
         
+        with open("config.json") as f:
+            data = json.load(f)
+
+        ip = data["server_ip"]
         # Create server
-        server = self.addHost('server', ip='10.0.0.100')
+        server = self.addHost('server', ip=ip)
         
         # Create clients
         clients = []

@@ -1,3 +1,5 @@
+K=5
+P=0
 build:
 	g++ client.cpp -o client
 	g++ server.cpp -o server
