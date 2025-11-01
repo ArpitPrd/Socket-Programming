@@ -80,8 +80,8 @@
 \subsection{Implementation Details}
 \begin{enumerate}
     \item \textbf{Client-Server Model}: The implementation follows a client-server architecture where the server listens for incoming connections and the client requests file downloads.
-    \item \textbf{Client Requests}: The client sends a request to the server specifying the file to be downloaded and the chunk size. The client downloads the entire file by continuously varying the offset and requesting chunks of the specified size until the entire file is received.
-    \item \textbf{Server Response}: The server reads the requested file in chunks of the specified size and sends each chunk back to the client.
+    \item \textbf{Client Requests}: The client sends a request to the server specifying the offset to the file to be downloaded and the chunk size. The client downloads the entire file by continuously varying the offset and requesting chunks of the specified size until the entire file is received.
+    \item \textbf{Server Response}: The server reads the requested file in window and sends this back to the client.
 \end{enumerate}
 
 \subsection{Observations}
@@ -108,8 +108,8 @@
 
 \subsection{Implementation Details}
 \begin{enumerate}
-    \item \textbf{Concurrency Model}: The server uses a multi-threaded approach to handle multiple client requests simultaneously. Each client connection is handled in a separate thread.
-    \item \textbf{Client Requests}: Clients send a request to the server specifying the file to be processed and the chunk size. The client reads the entire file in chunks of the specified size and sends each chunk to the server for word counting.
+    \item \textbf{Concurrency Model}: The server actively listens on its input port and responds to clients in FCFS fashion.
+    \item \textbf{Client Requests}: Clients send a request to the server specifying the offset in the file to be processed and the chunk size. The client downloads the entire file in chunks of the specified size.
     \item \textbf{Server Response}: The server processes each chunk received from the client, counts the words, and sends the count back to the client.
 \end{enumerate}
 
@@ -126,17 +126,17 @@
     \item \textbf{Trend in Graph}
     \begin{enumerate}
         \item \textbf{Increase}: As the number of clients increases, the average completion time also increases.
-        \item \textbf{Reason}: This is because the server has to handle more requests simultaneously, leading to increased contention for server resources.
+        \item \textbf{Reason}: This is due to the compounding effect as the number of clients increases. Increase in the number of clients leads to longer queue length. Therefore, the request the entered the queue most recently may end up waiting for a long time due to the increased length of the wait queue. This leads to increase in average service time of each client by the server.
     \end{enumerate}
     \item \textbf{Trend in Variance}
     \begin{enumerate}
         \item \textbf{Increase in Variance}: The variance in completion time also increases with the number of clients.
-        \item \textbf{Reason}: This is due to the increased contention for server resources, leading to more variability in processing times.
+        \item \textbf{Reason}: With increasing length of the queue, the permutations of requests in the queue become largely diverse due to which we observe large variation in completion times.
     \end{enumerate}
     \item \textbf{Scalability}
     \begin{enumerate}
         \item \textbf{Scalability Limitations}: There is a point where adding more clients leads to a significant increase in completion time.
-        \item \textbf{Reason}: This is due to the server reaching its maximum capacity for handling concurrent connections, leading to increased queuing delays.
+        \item \textbf{Reason}: This is due to the server reaching its maximum capacity for handling concurrent connections, leading to increased queuing delays. 
     \end{enumerate}
 \end{enumerate}
 
@@ -160,12 +160,12 @@
 \begin{enumerate}
     \item \textbf{Trend in Graph}
     \begin{enumerate}
-        \item \textbf{Decrease}: As the number of back to back requests by a single client increases, the Jain's Fairness Index decreases. However here the decrease is not very significant, in fact the handling of server seem almost fair.
-        \item \textbf{Reason}: Ideally, the fairness index should decrease as one client monopolizes server resources, leading to increased wait times for other clients. However, for small number of back to back requests, the server can still manage to handle requests from other clients in a timely manner, leading to a relatively high fairness index.
+        \item \textbf{Decrease}: As the number of back to back requests by a single client increases, the JFI remains relatively high and dips around c = 9
+        \item \textbf{Reason}: Ideally, the fairness index should decrease as one client monopolizes server resources, leading to increased wait times for other clients. However, for small number of back to back requests, the server can still manage to handle requests from other clients in a timely manner, leading to a relatively high fairness index till c=9.
     \end{enumerate}
     \item \textbf{Aymptotic Behaviour of Jain's Fairness Index}
     \begin{enumerate}
-        \item \textbf{For larger c values}: For larger number of back to back requests, the fairness index would decrease more significantly as the greedy client would dominate server resources, leading to increased wait times for other clients. For $c = 100$ we obtained a JFI score of 0.25.
+        \item \textbf{For larger c values}: For larger number of back to back requests, the fairness index would decrease more significantly as the greedy client would dominate server resources, leading to increased wait times for other clients. For \textbf{$c = 10$ we obtained a JFI score of around 0.3}.
         \item \textbf{Reason}: From the formula of JFI, if we take the limit of one client getting all the resources and others getting none, the JFI would tend to $1/n_{clients}$, where $n_{clients}$ is the number of clients in the topology. This is because both the numerator and denominator would be dominated by the resources allocated to the greedy client.
     \end{enumerate}     
     \item \textbf{Impact on Other Clients}
@@ -180,8 +180,8 @@
 \subsection{Implementation Details}
 \begin{enumerate}
     \item \textbf{Server Behavior}: The server implements a fairness mechanism to ensure that no single client can monopolize server resources. This is achieved by round-robin scheduling of client requests.
-    \item \textbf{Client Requests}: Clients send requests to the server specifying the file to be processed and the chunk size. The client reads the entire file in chunks of the specified size and sends each chunk to the server for word counting.
-    \item \textbf{Server Response}: The server processes each chunk received from the clients in a round-robin manner, counts the words, and sends the count back to the respective client.
+    \item \textbf{Client Requests}: Clients send requests to the server specifying the offset in the file to be processed and the chunk size. The client downloads the entire file in chunks of the specified size and by requesting for the same to the server.
+    \item \textbf{Server Response}: The server processes each message received from the clients in a round-robin manner, counts the words, and sends the set of valid words back to the respective client.
 \end{enumerate}
 
 \subsection{Observations}
@@ -198,8 +198,6 @@
     \begin{enumerate}
         \item \textbf{Stable JFI}: As the number of back to back requests by a single client increases, the Jain's Fairness Index remains relatively stable and high.
         \item \textbf{Reason}: The round-robin scheduling ensures that each client gets a fair share of server resources, preventing any single client from monopolizing the server.
-        \item Slight decrease in JFI: There is a slight decrease in JFI as the number of back to back requests increases, but it is not significant.
-        \item Reason: This is because even with round-robin scheduling, a client sending a large number of back to back requests can still lead to increased wait times for other clients, but the impact is mitigated by the fairness mechanism. (Explained in Limitations of Round Robin Scheduling)
     \end{enumerate}
     \item \textbf{Impact on Other Clients}
     \begin{enumerate}
@@ -209,12 +207,12 @@
     \item \textbf{Effectiveness of Fairness Mechanism}
     \begin{enumerate}
         \item \textbf{High JFI}: The Jain's Fairness Index remains high even with increasing back to back requests from a single client.
-        \item \textbf{Reason}: This indicates that the fairness mechanism is effective in ensuring equitable resource allocation among clients.
+        \item \textbf{Reason}: The server now processes each clients request one at a time. Assuming equal request servicing time, round robin strategy forces only one request of a client to be handled at a time, hence all the clients have similar servicing time periods.
     \end{enumerate}
     \item \textbf{Limitations of Round Robin Scheduling}
     \begin{enumerate}
-        \item How can client still monopolize server resources: If a client sends a very large number of back to back requests, it can still lead to increased wait times for other clients, even with round-robin scheduling.
-        \item Reason: This is because the server has to process each request in turn, and a large number of requests from one client can lead to increased overall processing time, affecting the responsiveness for other clients.
+        \item \textbf{How can client still monopolize server resources}: If a client sends a very large size of request, it can still lead to increased wait times for other clients, even with round-robin scheduling, by keeping the server occupied with its request.
+        \item \textbf{Reason}: This is because the server has to process each request in turn, and a large number of requests from one client can lead to increased overall processing time, affecting the responsiveness for other clients.
     \end{enumerate}
 \end{enumerate}
 
